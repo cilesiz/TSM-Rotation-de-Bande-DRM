@@ -3,11 +3,11 @@
 #                                                                               #
 # MIMIFIR Pierre-Jacques - 14/03/2019                                           #
 #                                                                               #
-#  RÙle: Gestion des mouvements de bandes DRP pour les PCA/PRA                  #
+#  R√¥le: Gestion des mouvements de bandes DRP pour les PCA/PRA                  #
 #                                                                               #
 # 1) Check si pas de backup en cours                                            #
 # 2) Enveler du robot toutes les bandes DRM montable                            #
-# 3) Passer toutes les bandes DRM avec le status vaultretrieve ‡ courierretrieve#
+# 3) Passer toutes les bandes DRM avec le status vaultretrieve √† courierretrieve#
 # 4) Envoi du report par mail sur la rotation des bandes du jour                #
 #                                                                               #
 #################################################################################
@@ -19,7 +19,7 @@ use Switch;
 
 my $version="1.7";
 
-my $from="pierre-jacques.mimifir.ext\@stet.eu";
+my $from="pierre-jacques.mimifir.ext\@gmail.com";
 my $user="pjmimifir";
 my $password="sakura545A33A";
 my $log_dir="/var/log/tsm/";
@@ -86,9 +86,9 @@ sub help{
 	print "\t-IR\t:Ajouter les bandes en retour dans Spectrum Protect\n";
 	print "\t-h\t:Afficher l'aide\n";
 	print "\t-A\t:Lancer un audit TSM de la library\n";
-	print "\t-SCV\t:Nous passons les bandes insÈreÈs la veille dans robot et dans l'Ètat COURIERRETIREVE en scratch\n";
-	print "\t-I\t:ItÈgration normale des bandes\n";
-	print "\t-C\t:VÈrification des bandes dans les slots de chargments\n";
+	print "\t-SCV\t:Nous passons les bandes ins√©re√©s la veille dans robot et dans l'√©tat COURIERRETIREVE en scratch\n";
+	print "\t-I\t:It√©gration normale des bandes\n";
+	print "\t-C\t:V√©rification des bandes dans les slots de chargments\n";
 }
 
 sub getEmptyVolumesList{
@@ -118,7 +118,7 @@ sub getEmptyVolumesList{
 
 #
 # Sortie des bandes DRM montable pour le PRA du site de secours.
-# Seules les bandes avec des donnÈes sont sorties.
+# Seules les bandes avec des donn√©es sont sorties.
 #
 sub media_outpout{
 	my $drm_medias=get_drm_media_informations();
@@ -128,7 +128,7 @@ sub media_outpout{
 		print $vol;
 		my $stat=$drm_medias->{$vol}{STAT};
 		next if ( $stat !~ /mountable/i);
-		next if (exists $vol_emptys->{$vol}); # le volume n'a pas de donnÈes et ne sera dont pas sortie
+		next if (exists $vol_emptys->{$vol}); # le volume n'a pas de donn√©es et ne sera dont pas sortie
 		my $cmd="$dsmadmc -id=$user -password=$password  $move_DRM__Montable_to_courier";
 		print "$vol non vide\n";
 		my $logfile="$log_dir/move_DRM__Montable_to_courier.$$.log";
@@ -244,7 +244,7 @@ sub SetVaultretrieveToCourierRetrieve{
 			push @media_imput,$vol;
 			run_dsmadmc_command($cmd);
 		}elsif($vol_stat =~ /courier\s+ret/i){
-			# On redemande les bandes Qui ne sont toujours pas trouvÈes dans la $lib
+			# On redemande les bandes Qui ne sont toujours pas trouv√©es dans la $lib
 			push @media_imput,$vol;
 			print "$vol : $vol_stat\n";
 		}
@@ -254,18 +254,18 @@ sub SetVaultretrieveToCourierRetrieve{
 sub sendHtmlRepportByMail{
 	my $ref=shift;
 	my @html;
-	my $date=strftime("%d/%m/%Y ‡ %H:%M",localtime(time));
-	my $subject="Movement des cassettes PRA STET Autorisation du $date";
+	my $date=strftime("%d/%m/%Y √† %H:%M",localtime(time));
+	my $subject="Movement des cassettes PRA du $date";
 
 	push @html,"<! DOCTYPE html>";
 	push @html,"<html>";
 	push @html,"<head><title>Mouvement des cassettes de PRA</title></head>";
 	push @html,"<body style=\"background-color:#ecefef;color:blue;height:100%;padding:5px;margin:1px;\">";
 
-	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:blue;margin-left:1px;height:100px;font:18px Hervetica\">Mouvement des cassettes de PRA STET Autorisation du $date</div>";
+	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:blue;margin-left:1px;height:100px;font:18px Hervetica\">Mouvement des cassettes de PRA  du $date</div>";
 	push @html,"<div style=\"background-color:#ecefef;color:blue\">";
 	push @html,"<div style=\"background-color:#eeecfc;color:black;border:1px solid green;	\">";
-	push @html,"<h4 style=\"margin:0;padding0;Color:blue\"> Liste des bandes ‡ entrer dans le Robot:</h4>";
+	push @html,"<h4 style=\"margin:0;padding0;Color:blue\"> Liste des bandes √† entrer dans le Robot:</h4>";
 	push @html,"<ul style=\"padding:0;Color:blue\">";
 	for my $volin(sort @media_imput){
 		my $txt=sprintf("%-12s %-45s %-7s",$volin,$drm_media{$volin}{STGPOOL},$drm_media{$volin}{ESTCAPACITY});
@@ -275,7 +275,7 @@ sub sendHtmlRepportByMail{
 	push @html,"</div>";
 
 	push @html,"<div style=\"background-color:#eeecfc;border:1px solid green;padding:1px\">";
-	push @html,"<h4 style=\"margin:0;padding0;Color:blue\"> Liste des bandes ‡ sortir dans le Robot:</h4>";
+	push @html,"<h4 style=\"margin:0;padding0;Color:blue\"> Liste des bandes √† sortir dans le Robot:</h4>";
 	push @html,"<ul style=\"padding:0;Color:blue\">";
 	for my $volout(sort @media_output){
 		my $txt=sprintf("%-12s %-45s %-7s",$volout,$drm_media{$volout}{STGPOOL},$drm_media{$volout}{ESTCAPACITY});
@@ -284,7 +284,7 @@ sub sendHtmlRepportByMail{
 	push @html,"</ul>";
 	push @html,"</div>";
 	push @html,"</div>";
-	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:white\"> (c) STET 2019 Version $version Pierre-Jacques MIMIFIR</div>";
+	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:white\"> (c) Shana Consulting 2019 Version $version Pierre-Jacques MIMIFIR</div>";
 	push @html,"</body>";
 	push @html,"</html>";
 	my $data=join "\n",@html;
@@ -301,15 +301,15 @@ sub sendHtmlRepportByMail{
 sub send_res_by_mail{
 	my $ref=shift;
 	my @html;
-	my $date=strftime("%d/%m/%Y ‡ %H:%M",localtime(time));
-	my $subject="Movement des cassettes PRA STET Autorisation du $date";
+	my $date=strftime("%d/%m/%Y √† %H:%M",localtime(time));
+du $date";
 
 	push @html,"<! DOCTYPE html>";
 	push @html,"<html>";
 	push @html,"<head><title>Mouvement des cassettes de PRA</title></head>";
 	push @html,"<body style=\"background-color:#ecefef;color:blue;height:100%;padding:5px;margin:1px;\">";
 
-	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:blue;margin-left:1px;height:100px;font:18px Hervetica\">IntÈgration des cassettes en attentes ‡ la du $date</div>";
+	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:blue;margin-left:1px;height:100px;font:18px Hervetica\">Int√©gration des cassettes en attentes √† la du $date</div>";
 	push @html,"<div style=\"background-color:#ecefef;color:blue\">";
 	push @html,"<div style=\"background-color:#eeecfc;color:black;border:1px solid green;	\">";
 	push @html,"<h4 style=\"margin:0;padding0;Color:blue\"> Liste des bandes attendue dans le chargeur:</h4>";
@@ -325,7 +325,7 @@ sub send_res_by_mail{
 	push @html,"</ul>";
 	push @html,"</div>";
 	push @html,"</div>";
-	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:green\"> (c) STET 2019 Version $version Pierre-Jacques MIMIFIR</div>";
+	push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:green\"> (c) Shana Consulting 2019 Version $version Pierre-Jacques MIMIFIR</div>";
 	push @html,"</body>";
 	push @html,"</html>";
 	my $data=join "\n",@html;
@@ -355,7 +355,7 @@ sub buld_imputOutputList{
 }
 
 sub get_Media_IN_LIB_IO{
-	print "Erreur: les variables de l'API TS3310 ne sontt pas toutes dÈfinies.\n" if not defined($tsapi and $tsapi_user and $tsapi_password and $tsapi_host);;
+	print "Erreur: les variables de l'API TS3310 ne sontt pas toutes d√©finies.\n" if not defined($tsapi and $tsapi_user and $tsapi_password and $tsapi_host);;
 	my %data;
 	my $command="$java -jar $tsapi -u $tsapi_user -p $tsapi_password -a $tsapi_host --viewIOStation";
 	print "$command \n";
@@ -377,7 +377,7 @@ sub get_Media_IN_LIB_IO{
 }
 
 sub get_MediaList_IN_LIBs{
-	print "Erreur: les variables de l'API TS3310 ne sont pas toutes dÈfinies.\n" if not defined($tsapi and $tsapi_user and $tsapi_password and $tsapi_host);
+	print "Erreur: les variables de l'API TS3310 ne sont pas toutes d√©finies.\n" if not defined($tsapi and $tsapi_user and $tsapi_password and $tsapi_host);
 	my %data;
 	if(open F,"$java -jar $tsapi -u $tsapi_user -p tsapi_password -a $tsapi_host --viewDataCartridges|"){
 		while(<F>){
@@ -399,7 +399,7 @@ sub main {
 	my $result=`$dsmadmc -id=$user -password=$password  q session`;
 	if($? != 0){
 		print "Connection Impossible au serveur TSM!\n";
-		print "Merci de vÈrifier les options de connexions user/password.\n";
+		print "Merci de v√©rifier les options de connexions user/password.\n";
 		exit -1;
 	}
 	if($#ARGV == -1){
@@ -411,7 +411,7 @@ sub main {
 			case ("-R") {
 				my $process=get_process();
 				while($process == 1){
-					print "Des processus TSM sont en cours d'exÈcussion...\n";
+					print "Des processus TSM sont en cours d'ex√©cussion...\n";
 					print "Nous attendons 5 minutes et referons une nouvelle tentative!\n";
 					sleep(5*60);
 					$process=get_process();
@@ -419,23 +419,23 @@ sub main {
 				my $empty_volumes=getEmptyVolumesList();
 				my $drm_information=get_drm_media_informations();
 				SetCourierToVault($drm_information); # Nous passons les banndes sorties la veille en status Vault
-				media_imput(); # Nous ajoutons les bandes ajoutÈes hiers ‡ TSM qui se Trouve en status CourierRetrieve
+				media_imput(); # Nous ajoutons les bandes ajout√©es hiers √† TSM qui se Trouve en status CourierRetrieve
 				my @text;
 				#
 				# Sortie des bandes DRM
 				#
 				media_outpout();	
 				#
-				#  Nous demandons les bandes ‡ retourner par le prestataire
+				#  Nous demandons les bandes √† retourner par le prestataire
 				#
 				SetVaultretrieveToCourierRetrieve($drm_information);
-				# GenÈraytion de la liste des entrees et des sorties
-				push @text,"Liste des bandes ‡ sortir du robot:";
+				# Gen√©raytion de la liste des entrees et des sorties
+				push @text,"Liste des bandes √† sortir du robot:";
 				foreach my $vol(@media_output){
 					push @text,"\t$vol";
 				}
 				push @text,"";
-				push @text,"Liste des bandes ‡ entrer du robot:";
+				push @text,"Liste des bandes √† entrer du robot:";
 				foreach my $vol(@media_imput){
 					push @text,"\t$vol";
 				}
@@ -446,15 +446,15 @@ sub main {
 				exit -5;
 			}case ("-C"){
 				my @html=();
-				my $date=strftime("%d/%m/%Y ‡ %H:%M",localtime(time));
+				my $date=strftime("%d/%m/%Y √† %H:%M",localtime(time));
 				push @html,"<! DOCTYPE html>";
                                 push @html,"<html>";
-                                push @html,"<head><title>\"VÈrification des bandes prÈsentes dans les slots IO robot\"</title></head>";
+                                push @html,"<head><title>\"V√©rification des bandes pr√©sentes dans les slots IO robot\"</title></head>";
                                 push @html,"<body style=\"background-color:#ecefef;color:blue;height:100%;padding:5px;margin:1px;\">";
                                 push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:blue;margin-left:1px;height:100px;font:18px Hervetica\">Date:$date</div>";
                                 push @html,"<div style=\"background-color:#ecefef;color:blue\">";
                                 push @html,"<div style=\"background-color:#eeecfc;color:black;border:1px solid green;   \">";
-                                push @html,"<h4 style=\"margin:0;padding0;Color:blue\">Liste des bandes trouvÈes:</h4>";
+                                push @html,"<h4 style=\"margin:0;padding0;Color:blue\">Liste des bandes trouv√©es:</h4>";
                                 push @html,"<ul style=\"padding:0;Color:blue\">";
 			 	my $drm_information=get_drm_media_informations();
 				my $m_io=get_Media_IN_LIB_IO();
@@ -462,11 +462,11 @@ sub main {
 				foreach my $vol(keys %{$m_io}){
 					if(exists  $drm_information->{$vol}){
 						if($drm_information->{$vol}{STAT} =~ /^Courier$/i){
-							push @html,"<il>$vol : Cette bande devrait Ítre en transit vers Locarchive.</il>";
+							push @html,"<il>$vol : Cette bande devrait √™tre en transit vers Locarchive.</il>";
 						}elsif($drm_information->{$vol}{STAT} =~ /vault $/i){
-							push @html,"<il>$vol : Cette bande devrait Ítre chez Locarchive</il>";
+							push @html,"<il>$vol : Cette bande devrait √™tre chez Locarchive</il>";
 						}else{
-							push @html,"<il>$vol : Cette bande sera intÈgrÈe lors du prochain checkin!</il>";
+							push @html,"<il>$vol : Cette bande sera int√©gr√©e lors du prochain checkin!</il>";
 						}
 					}else{
 						push @html,"<il>$vol : Bande non connue!</il>";
@@ -475,7 +475,7 @@ sub main {
 				push @html,"<il></il>";
 				push @html,"</div></div></ul></h4><div></div></html>";
 				my $text=join "\n",@html;
-				my $subject="VÈrification des bandes bulk";
+				my $subject="V√©rification des bandes bulk";
 				my $data=$text;
 			 	open  MAIL,"|/usr/sbin/sendmail -t" || return undef;
                                 print MAIL "To: TSM_exploitation2\n";
@@ -491,7 +491,7 @@ sub main {
 
 
 			}case ("-I"){
-				my $date=strftime("%d/%m/%Y ‡ %H:%M",localtime(time));
+				my $date=strftime("%d/%m/%Y √† %H:%M",localtime(time));
 				my %h;
 				my $drm_information=get_drm_media_informations();
 				#buld_imputOutputList($drm_information);
@@ -508,23 +508,23 @@ sub main {
 				my @html;
 				push @html,"<! DOCTYPE html>";
 				push @html,"<html>";
-				push @html,"<head><title>Checkin des cassettes demandÈes</title></head>";
+				push @html,"<head><title>Checkin des cassettes demand√©es</title></head>";
 				push @html,"<body style=\"background-color:#ecefef;color:blue;height:100%;padding:5px;margin:1px;\">";
 				push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:blue;margin-left:1px;height:100px;font:18px Hervetica\">Date:$date</div>";
 				push @html,"<div style=\"background-color:#ecefef;color:blue\">";
 				push @html,"<div style=\"background-color:#eeecfc;color:black;border:1px solid green;	\">";
-				push @html,"<h4 style=\"margin:0;padding0;Color:blue\">Bande(s) demandÈe(s):</h4>";
+				push @html,"<h4 style=\"margin:0;padding0;Color:blue\">Bande(s) demand√©e(s):</h4>";
 				push @html,"<ul style=\"padding:0;Color:blue\">";
 				foreach my $vol(@waiting_media){
 				  push @html,"<il>$vol</il>";
 				}
 				push @html,"</ul>";
 				my @checkin_vol;
-				push @html,"<h4 style=\"margin:0;padding0;Color:blue\">RÈsulat:</h4>";
+				push @html,"<h4 style=\"margin:0;padding0;Color:blue\">R√©sulat:</h4>";
 				push @html,"<ul style=\"padding:0;Color:blue\">";
 				foreach my $vol(@waiting_media){
 				   if(! exists $m_io->{$vol}){
-						print "Le volume $vol est attendu, mais n'a pas ÈtÈ trouvÈ dans le chargeur du robot\n";
+						print "Le volume $vol est attendu, mais n'a pas √©t√© trouv√© dans le chargeur du robot\n";
 						my $txt=sprintf("%-12s: %-4s",$vol,"KO => Volume absent du robot!");
 						push @html,"<il>$txt</il>";
 				   }else{
@@ -532,11 +532,11 @@ sub main {
 						if($cur_lib =~ /$lib/){
 							my $txt=sprintf("%-12s: %-4s",$vol,"OK");
 							push @html,"<il>$txt</il>";
-							print "checkin du volume $vol demandÈ\n";
+							print "checkin du volume $vol demand√©\n";
 							push @checkin_vol,$vol;
 						}else{
-							my $txt=sprintf("%-12s: %-4s",$vol,"KO => Non affectÈe ‡ la bonne library");
-							print "le volume $vol a ÈtÈ trouvÈ dans le robot, mais n'est pas affectÈ ‡ la librairie $lib!\n";
+							my $txt=sprintf("%-12s: %-4s",$vol,"KO => Non affect√©e √† la bonne library");
+							print "le volume $vol a √©t√© trouv√© dans le robot, mais n'est pas affect√© √† la librairie $lib!\n";
 							push @html,"<il>$txt</il>";
 
 						}
@@ -546,7 +546,12 @@ sub main {
 				push @html,"<div>.</div>";
 				push @html,"<div>.</div>";
 				push @html,"<div>$res</div>";
-				push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:white\">(c) STET 2019 Version $version Pierre-Jacques MIMIFIR</div><div></div>";
+				push @html,"<div style=\"border:1px solid blue;background-color:#ecefef;color:white\">(c) Shana Consulting
+				
+				
+				
+				
+				2019 Version $version Pierre-Jacques MIMIFIR</div><div></div>";
 				push @html,"</html>";
 
 				foreach my $v(@checkin_vol){
@@ -596,19 +601,19 @@ sub main {
 					}
 				}
 				media_imput($drm_information);
-				print "Recherche des bandes terminÈe\n";
+				print "Recherche des bandes termin√©e\n";
 			}case("-A"){
 				my $cmd="$dsmadmc -id=$user -password=$password -comma audit libr $lib checklabel=barcode";
 				print "Audit de la library $lib en cours.\n";
 				run_dsmadmc_command($cmd);
-				print "lancement du processus d'audit de la library terminÈ\n";
+				print "lancement du processus d'audit de la library termin√©\n";
 			}
 			case("-SCV"){
 				my $drm_information=get_drm_media_informations();
 				SetCourierToVault($drm_information); # Nous passons les bandes sorties la veille en status Vault
 			}
 			else{
-				print "Aucune action n'a ÈtÈ reconnue sur la ligne de commande\n";
+				print "Aucune action n'a √©t√© reconnue sur la ligne de commande\n";
 				help();
 				exit -6;
 			}
@@ -632,17 +637,17 @@ sub read_config(){
 			}
 
 		}		
-		$tsapi= exists $config{tsapi} ? $config{tsapi} : exit_("la variable tsapi n'est pas dÈfinie\n");
-		$tsapi_host= exists $config{tsapi_host} ? $config{tsapi_host} : exit_("la variable tsapi_host non dÈfinie");
-		$tsapi_user= exists $config{tsapi_user} ? $config{tsapi_user} : exit_("la variable tsapi_user n'est pas dÈfinie\n");
-		$tsapi_password= exists $config{tsapi_password} ? $config{tsapi_password} : exit_ ("la variable tsapi_password n'est pas dÈfinie\n");;
+		$tsapi= exists $config{tsapi} ? $config{tsapi} : exit_("la variable tsapi n'est pas d√©finie\n");
+		$tsapi_host= exists $config{tsapi_host} ? $config{tsapi_host} : exit_("la variable tsapi_host non d√©finie");
+		$tsapi_user= exists $config{tsapi_user} ? $config{tsapi_user} : exit_("la variable tsapi_user n'est pas d√©finie\n");
+		$tsapi_password= exists $config{tsapi_password} ? $config{tsapi_password} : exit_ ("la variable tsapi_password n'est pas d√©finie\n");;
 
-		$tsm_lib= exists $config{tsm_lib} ? $config{tsm_lib} : exit_ ("la variable tsm_lib n'est pas dÈfinie\n");;
+		$tsm_lib= exists $config{tsm_lib} ? $config{tsm_lib} : exit_ ("la variable tsm_lib n'est pas d√©finie\n");;
 
-		$lib= exists $config{lib} ? $config{lib} : exit_("la variable lib n'est pas dÈfinie\n");
-		$user= exists $config{user} ? $config{user} : exit_("la variable $user n'est pas dÈfinie\n");
+		$lib= exists $config{lib} ? $config{lib} : exit_("la variable lib n'est pas d√©finie\n");
+		$user= exists $config{user} ? $config{user} : exit_("la variable $user n'est pas d√©finie\n");
 		$password= exists $config{password} ? $config{password} : exit_("la variable password n'est pas definie\n");
-		$java= exists $config{java} ? $config{java} : exit_("la variable java n'est pas dÈfinie\n");
+		$java= exists $config{java} ? $config{java} : exit_("la variable java n'est pas d√©finie\n");
 		
 		foreach my $var ($tsapi,$java){
 		if(!-f $var){
